@@ -24,9 +24,9 @@
           value (common/create-cursor state field)
           validator (or (:validator params) (-> impl tag :validator) #())
           error (common/create-cursor errors field)
-          _ 0 #_(when validator
-                  (add-watch value :validation
-                    (fn [a k old-val new-val] (reset! error (validator new-val)))))
+          _ (when validator
+              (add-watch value :validation
+                (fn [a k old-val new-val] (reset! error (validator new-val)))))
           label (nth params 2 nil)
           values (nth params 3 nil)]
       {:field field
@@ -41,6 +41,7 @@
 (defn resolve-field [form-params component]
   (let [tag (first component)
         params (resolve-params form-params tag (rest component))]
+    ^{:key (:field params)}
     [(get-in form-params [:impl tag :render]) params]))
 
 (declare resolve-components)
@@ -109,28 +110,37 @@
    [cancel-button params]
    [save-button params]])
 
-;;I know there an urge to use `with-let` or form-2 here but
-;; using form-2 will not work properly with re-frame
+
 (defn form [params & fields]
-  (let [state (resolve-state (:state params))
+  (let [state (r/atom (:state params))
         changed? (r/atom false)
-        _ (add-watch state :changed (fn [_ _ _ _] (reset! changed? true)))
         errors (r/atom {})
-        _ (when (:debug params) (debug-state state (:debug params)))
-        impl (or (:impl params) form-impl/*impl*)
-        form-params {:state state
-                     :params (dissoc params :state :debug :impl)
-                     :errors errors
-                     :changed changed?
-                     :impl impl}]
-    (if (:dialog? params)
-      [:div]
-      [:div {:id (or (:id params))
-             :style {:width 300}}
-       (when (:title params)
-         [(-> impl :form-title :render) (:title params)])
-       [content (resolve-components form-params fields)]
-       [form-buttons form-params]])))
+        _ (add-watch state :changed (fn [_ _ _ _] (.log js/console "changed~") (reset! changed? true)))]
+    (r/create-class
+      {:display-name "informal/form"
+       :should-component-update (fn [this [_ old-params] [_ new-params]]
+                                  (reset! errors {})
+                                  (reset! changed? false)
+                                  (reset! state new-params)
+                                  true)
+
+       :reagent-render (fn [params & fields]
+                         (let [_ (when (:debug params) (debug-state state (:debug params)))
+                               impl (or (:impl params) form-impl/*impl*)
+                               form-params {:state state
+                                            :params (dissoc params :state :debug :impl)
+                                            :errors errors
+                                            :changed changed?
+                                            :impl impl}]
+                           (if (:dialog? params)
+                             [(-> impl :dialog-layout :render) (:id params) ]
+                             [:div {:id (:id params)
+                                    :style {:width 300}}
+                              (when (:title params)
+                                [(-> impl :form-title :render) (:title params)])
+                              [(-> impl :form-layout :render) (:id params) (resolve-components form-params fields)]
+                              [form-buttons form-params]])))})))
+
 
 (defn set-default-impl! [impl]
   (set! form-impl/*impl* impl))

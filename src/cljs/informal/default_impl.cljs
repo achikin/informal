@@ -42,6 +42,14 @@
 (def *default-impl* {:form/text {:render #'text}
                      :form/select {:render #'select}
                      :form/checkbox {:render #'checkbox}
+                     :form-layout {:render (fn [id & fields]
+                                             [:div {:id id
+                                                    :key :content
+                                                    :style {:display :flex
+                                                            :flex-direction :column}} fields])}
+                     :dialog-layout {:render (fn [id {:keys [save-button cancel-button custom-buttons] :as buttons} & fields]
+                                               [:div fields])}
+                     :form-title {:render (fn [title] [:h2 title])}
                      :save-button {:render #'save-button}
                      :cancel-button {:render #'cancel-button}})
 (def *impl* {})
