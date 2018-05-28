@@ -15,13 +15,13 @@
 
   :figwheel {:css-dirs ["resources/public/css"]}
 
-  :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+  :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
 
   :aliases {"dev" ["do" "clean"
-                        ["pdo" ["figwheel" "dev"]]]
+                   ["pdo" ["figwheel" "dev"]]]
             "build" ["with-profile" "+prod,-dev" "do"
-                          ["clean"]
-                          ["cljsbuild" "once" "min"]]}
+                     ["clean"]
+                     ["cljsbuild" "once" "min"]]}
 
   :profiles
   {:dev
@@ -29,7 +29,7 @@
                    [day8.re-frame/re-frame-10x "0.3.3"]
                    [day8.re-frame/tracing "0.5.1"]
                    [figwheel-sidecar "0.5.16"]
-                   [cider/piggieback "0.2.3"]]
+                   [cider/piggieback "0.3.5"]]
 
     :plugins      [[lein-figwheel "0.5.16"]
                    [lein-doo "0.1.8"]
