@@ -124,9 +124,36 @@ In order to stay non-opinionated and flexible Informal does not provide any read
 ```
 #### Layouts
 #### Custom form fields
+|param|description|
+|-|-|
+|`:field`|A corresponding key of this field's data in your state map. Could also be a vector of nested keys if you have map of maps. Technically it can be either key or anything that fits reagent/cursor path.|
+|`:label`|String that contains label for your field. You can either provide it as a second parameter to your field like this `[:form/text :name "Name"]` or let Informal infer it from `:field`|
+|`:value`|Derefable state of the current value of your field. Please do not try to set the value through this derefable. At the moment it's implemented as a cursor which could be set, but later things can change|
+|`:on-change`|A function that you must use to report the updated value back to the form.|
+|`:error`|Derefable that contains either `nil` or textual representation of an error, reported by validator.|
+|`:values`|Additional data for `select` and other data-driven fields. You can pass it through third positional parameter to your component `[:form/select :city "Select city" [[:vrn "Voronezh"][:msk "Moscow"]]]` ([see more](#select-autocomplete-and-other-data-driven-fields))|
+|`:params`|Param-map passed to your component as an optional first positional parameter `[:form/text {:param1 1} ...]`|
 #### Select, autocomplete and other data-driven fields
+Some of the fields like select fields need additional data to render choices or autocomplete options. You can pass that data to your field as a positional parameter after `label`:
+```clojure
+[:form/select :my-field "Please select something:" [[:id1 "Label1"] [:id2 "Label2"]]]
+```
+Conventionally that data is in the form of `[[value label] [value label] ...]` where `value` is what is actually assigned to your field and label is a textual representation of this value. But Informal does not process or alter that data so feel free to pass whatever you want here. E.g. you can pass a re-frame subscription or a vector of maps - it's up to you to decide.
+Later on when creating your data-driven component that values will be accessible under a `:values` key in the param-map passed to your component:
+```(defn select [{:keys [field value values <-- here ...]}] 
+     ...)
+```
 #### Setting default implementation
-
+Passing `:impl` to form every time could be very annoying so you can set the default impl for all your forms like this:
+```clojure
+(def impl {...})
+(informal.form/set-default-impl! impl)
+```
+Later if you want to access your default impl you can find it inside the `informal.default-impl` namespace:
+```clojure
+(def default-impl (informal.default-impl/*impl*))
+```
+#### form-params map description
 ### Features
 #### How it works?
 Informal takes all the forms passed to `informal/form` function, traces them and replaces any tags found in `:impl` with an appropriate form field implementation, wraps those fields into form layout and adds save/cancel buttons. 
