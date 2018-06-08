@@ -5,10 +5,24 @@ Design-agnostic Reagent forms framework focused on DRY and maximum reusability
 ## Disclamer
 *This framework does not provide ready-made forms. It rather serves as a mechamism to reduce boilerplate code in forms.*
 
-## Install
+## Getting started
 Add informal dependecy to the leiningen `project.clj`
 ```
 [achikin/informal x.y.z]
+```
+Require `informal.form` in your views
+```
+(ns my-views
+  (:require [informal.form :as form])
+```
+Roll your own implementation (see below)
+Now define your views
+```
+(defn my-form-view [state]
+  [form/form {:state state
+              :on-save #(fn [state] (push-to-server state))}
+    [:form/text :username]
+    [:form/text :password]])
 ```
 ## Features
 - Compact and clean form definition
@@ -21,8 +35,22 @@ Add informal dependecy to the leiningen `project.clj`
 <img align="right" src="images/readme/informal4.gif?raw=true">
 
 ```clojure
-(defn a [b]
-  (c a))
+(ns my-ns
+    (:require [informal.form :as form]
+              [informal.default-impl :as impl]))
+
+(defn myform []
+  (let [state {:name "John"
+               :last_name "Doe"
+               :age 23}]
+    [form/form {:state state
+                :title "My shiny form"
+                :on-save #(.log js/console %)
+                :impl impl/*default-impl*}
+     [:form/text :name]
+     [:form/text* :last_name]
+     [:form/number :age]]))
+
 ```
 
 
@@ -30,6 +58,10 @@ Add informal dependecy to the leiningen `project.clj`
 
 ### Initial setup
 #### Rolling your own implementation
+In order to stay non-opinionated and flexible Informal does not provide any ready-made components so you should provide implementations of your form fields by yourself. In order to do that you need to define form implementation
+```
+(def impl {})
+```
 ### Features
 #### How it works?
 Informal takes all the parameters passed to it's `informal/form` function, traces them and replaces any tags found in `:impl` with an appropriate form field implementation.
