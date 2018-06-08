@@ -73,11 +73,6 @@
         :else (.error js/console "Form: can't resolve tag -> " tag)))))
 
 
-(defn content [fields]
-  [:div {:key :content
-         :style {:display :flex
-                 :flex-direction :column}} fields])
-
 (defn resolve-state [state]
   (cond
     (satisfies? IAtom state) state
@@ -106,23 +101,35 @@
                  :padding-right "1em"
                  :display :flex
                  :justify-content :flex-end}}
-   (:custom-buttons params)
+   (seq (:custom-buttons params))
    [cancel-button params]
    [save-button params]])
-
 
 (defn form [params & fields]
   (let [state (r/atom (:state params))
         changed? (r/atom false)
         errors (r/atom {})
-        _ (add-watch state :changed (fn [_ _ _ _] (.log js/console "changed~") (reset! changed? true)))]
+        _ (add-watch state :changed (fn [_ _ _ _]
+                                      (reset! changed? true)))]
     (r/create-class
       {:display-name "informal/form"
+
        :should-component-update (fn [this [_ old-params] [_ new-params]]
-                                  (reset! errors {})
-                                  (reset! changed? false)
-                                  (reset! state new-params)
-                                  true)
+                                  (let [new-st (:state new-params)
+                                        old-st (:state old-params)
+                                        other-new (dissoc new-params :state)
+                                        other-old (dissoc old-params :state)]
+                                    (or
+                                      (when-not (= old-st new-st)
+                                        (reset! state new-st)
+                                        (reset! errors {})
+                                        (reset! changed? false)
+                                        true)
+                                      (not= other-old other-new))))
+
+       :component-will-unmount #(do
+                                  (remove-watch state :debug)
+                                  (remove-watch state :changed))
 
        :reagent-render (fn [params & fields]
                          (let [_ (when (:debug params) (debug-state state (:debug params)))
@@ -138,8 +145,9 @@
                                     :style {:width 300}}
                               (when (:title params)
                                 [(-> impl :form-title :render) (:title params)])
-                              [(-> impl :form-layout :render) (:id params) (resolve-components form-params fields)]
-                              [form-buttons form-params]])))})))
+                              [(-> impl :form-layout :render)
+                               (:id params) (resolve-components form-params fields)]
+                              [(-> impl :buttons-layout :render) form-params save-button cancel-button]])))})))
 
 
 (defn set-default-impl! [impl]
