@@ -73,13 +73,17 @@
    [cancel-button params]
    [save-button params]])
 
-(defn form-layout [id & fields]
-  [:div {:id id
+(defn form-layout [form-params title fields buttons]
+  [:div {:id (:id form-params)
          :key :content
          :style {:display :flex
-                 :flex-direction :column}} fields])
+                 :width (or (-> form-params :params :width) 300)
+                 :flex-direction :column}}
+   title
+   fields
+   buttons])
 
-(defn dialog-layout [params & fields]
+(defn dialog-layout [params title fields buttons]
   [form-layout (:id params) fields])
 
 (defn required-validator [value]
