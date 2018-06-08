@@ -103,12 +103,17 @@ Now define your views
 [informal/form param-map & components]
 ```
 `param-map` can contain the following keys:
-`:state` - the initial state of your form. Usually just map, but whatever fits `reagent/create-cursor` can be passed here.
-`:title` - form title string
-`:custom-buttons` - sequence of additional buttons to be placed alongside with save/cancel button
-`:save-title`, `:cancel-title` - custom titles for save and cancel buttons
-`:cancel-disabled?` - set `true` to hide cancel button
-`:impl` - a set of rendering functions and validators ([see details below](#rolling-your-own-implementation))
+
+|param|description|
+|---|---|
+|`:state`|The initial state of your form. Usually just map, but whatever fits `reagent/create-cursor` can be passed here.|
+|`:title`|Form title. Treated as string.|
+|`:custom-buttons`|Sequence of additional buttons to be placed alongside with save/cancel button. See more (here)[#adding-custom-buttons].|
+|`:save-title`, `:cancel-title`|Custom titles for save and cancel buttons|
+|`:cancel-disabled?`|Set `true` to hide cancel button|
+|`:dialog?`|Set `true` to render your form as a dialog ([see below](#layouts))|
+|`:impl`|A set of rendering functions and validators ([see details below](#rolling-your-own-implementation))|
+
 ### Rolling your own implementation
 In order to stay non-opinionated and flexible Informal does not provide any ready-made components so you should provide implementations of your form fields by yourself. In order to do that you need to define form implementation and then pass it to your form.
 ```clojure
@@ -199,7 +204,18 @@ You can add any custom buttons to your form, passing a seq of components to your
 ### Common cases
 #### Working with re-frame
 #### How do I access state?
-
+#### Working with arrays of data
+Sometimes you have data that contains arrays of the same-type information like this:
+```
+(def user {:name "John"
+           :phones [{:number "123-456" :tag "mobile"}
+                    {:number "12-85-00" :tag "home"}]})
+```
+And you want to be able to render that array-data inside your form and let user add/delete those entries.
+The best solution is to roll your own implementation. That's what `:impl` is for!
+```
+Here goes an example with custom form field which renders an array and custom button which adds new element to array.
+```
 ### Design philosophy
 Informal percieves the following goals (prioritized top to bottom)
 - Compact form definition
