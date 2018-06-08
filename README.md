@@ -1,6 +1,6 @@
 # Informal
 
-> Would you like to sign my petition?
+*Would you like to sign my petition?*
 
 Design-agnostic Reagent forms framework focused on DRY and maximum reusability
 
