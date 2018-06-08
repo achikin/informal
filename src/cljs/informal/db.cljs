@@ -1,4 +1,0 @@
-(ns informal.db)
-
-(def default-db
-  {:name "re-frame"})
