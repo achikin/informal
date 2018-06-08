@@ -2,6 +2,7 @@ pom.xml
 pom.xml.asc
 *.jar
 *.class
+*.log
 /lib/
 /classes/
 /target/
@@ -13,3 +14,4 @@ pom.xml.asc
 .nrepl-port
 .cpcache/
 .repl/
+/resources/public/js/compiled/
