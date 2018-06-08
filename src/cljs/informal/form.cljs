@@ -138,15 +138,16 @@
                                             :params (dissoc params :state :debug :impl)
                                             :errors errors
                                             :changed changed?
-                                            :impl impl}]
+                                            :impl impl}
+                               resolved-fields (resolve-components form-params fields)]
                            (if (:dialog? params)
-                             [(-> impl :dialog-layout :render) (:id params) ]
+                             [(-> impl :dialog-layout :render) form-params resolved-fields]
                              [:div {:id (:id params)
                                     :style {:width 300}}
                               (when (:title params)
                                 [(-> impl :form-title :render) (:title params)])
                               [(-> impl :form-layout :render)
-                               (:id params) (resolve-components form-params fields)]
+                               (:id params) resolved-fields]
                               [(-> impl :buttons-layout :render) form-params save-button cancel-button]])))})))
 
 

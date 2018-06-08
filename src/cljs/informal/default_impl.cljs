@@ -1,8 +1,15 @@
 (ns informal.default-impl
   (:require [informal.common :as common]))
 
+(defn error-view [error]
+  (let [err @error]
+    (when err
+      [:div {:style {:font-size "60%"
+                     :margin-top 5
+                     :color "red"}}
+       err])))
+
 (defn text [{:keys [field value label error params]}]
-  (.log js/console @error)
   [:form {:key field}
    [:label {:for field
             :style {} } label]
@@ -10,11 +17,7 @@
    [:input (merge params {:value @value
                           :id field
                           :on-change #(reset! value (common/event->value %))})]
-   (when @error
-     [:div {:style {:font-size "60%"
-                    :margin-top 5
-                    :color "red"}}
-      @error])])
+   [error-view error]])
 
 (defn number [{:keys [field value label error params]}]
   [:form {:key field}
@@ -24,7 +27,8 @@
    [:input (merge params {:value @value
                           :id field
                           :type "number"
-                          :on-change #(reset! value (common/event->value %))})]])
+                          :on-change #(reset! value (common/event->value %))})]
+   [error-view error]])
 
 (defn dropdown-option [default-value [value label]]
   [:option {:value value
@@ -35,18 +39,22 @@
   [:form {:key field}
    [:label {:for field
             :style {:margin 10}} label]
+   [:br]
    [:select (merge params {:id field
                            :value @value
                            :on-change #(reset! value (common/event->value %))})
-    (doall (map (partial dropdown-option @value) values))]])
+    (doall (map (partial dropdown-option @value) values))]
+   [error-view error]])
 
-(defn checkbox [{:keys [value params label field]}]
+(defn checkbox [{:keys [value params error label field]}]
   [:form {:key field}
    [:label {:for field
             :style {:margin 10}} label]
+   [:br]
    [:input {:type :checkbox
             :value @value
-            :on-change #(reset! value (common/event->checked %))}]])
+            :on-change #(reset! value (common/event->checked %))}]
+   [error-view error]])
 
 (defn save-button [{:keys [label on-click disabled]}]
   [:button {:on-click on-click
@@ -71,12 +79,15 @@
          :style {:display :flex
                  :flex-direction :column}} fields])
 
-(defn text-required-validator [text]
-  (when (empty? text) "Should not be empty"))
+(defn dialog-layout [params & fields]
+  [form-layout (:id params) fields])
+
+(defn required-validator [value]
+  (when (empty? value) "Should not be empty"))
 
 (def *default-impl* {:form/text {:render #'text}
                      :form/text* {:render #'text
-                                  :validator #'text-required-validator}
+                                  :validator #'required-validator}
                      :form/select {:render #'select}
                      :form/number {:render #'number}
                      :form/checkbox {:render #'checkbox}
