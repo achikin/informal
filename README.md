@@ -51,7 +51,9 @@ Design-agnostic Reagent forms framework focused on DRY and maximum reusability
 (def impl {:form-layout {:render #'form-layout}
            :save-button {:render #'save-button}
            :cancel-button {:render #'cancel-button}
-           :form/text {:render #'text}})
+           :form/text {:render #'text}
+           :form/text* {:render #'text
+                        :validator (fn [val] (when (empty? val) "Should not be empty"))})
 
 (defn myform []
   (let [state {:name "John"
