@@ -18,8 +18,7 @@ Design-agnostic Reagent forms framework focused on DRY and maximum reusability
 
 ```clojure
 (ns my-ns
-    (:require [informal.form :as form]
-              [informal.default-impl :as impl]))
+    (:require [informal.form :as form]))
 
 (defn save-button [{:keys [label on-click disabled]}]
   [:button {:on-click on-click
@@ -61,7 +60,7 @@ Design-agnostic Reagent forms framework focused on DRY and maximum reusability
     [form/form {:state state
                 :title "My shiny form"
                 :on-save #(.log js/console %)
-                :impl impl/*default-impl*}
+                :impl impl}
      [:form/text :name]
      [:form/text* :last_name]
      [:form/number :age]]))
