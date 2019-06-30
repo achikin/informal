@@ -1,3 +1,4 @@
+*For now this document is more like a design document. Some of the functionality described here may not be implemented in the library*
 # Informal
 
 *Would you like to sign my petition?*
