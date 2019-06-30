@@ -8,6 +8,19 @@
 (defonce state (r/atom {}))
 
 
+(defn myform []
+  (let [state {:name "John"
+               :last_name "Doe"
+               :age 23}]
+    [form/form {:state state
+                :title "My shiny form"
+                :on-save #(.log js/console %)
+                :impl impl/*default-impl*}
+     [:form/text :name]
+     [:form/text* :last_name]
+     [:form/number :age]]))
+
+
 (defn main-panel []
   (let [name (rf/subscribe [::subs/name])]
     [:div
@@ -17,6 +30,7 @@
       "Change atom"]
      [:button {:on-click #(rf/dispatch [:example.events/change-form-state])}
       "Change someform state"]
+     [myform]
      [form/form {:state @(rf/subscribe [:example.subs/someform])
                  :title "Someform"
                  :on-save #(rf/dispatch [:example.events/set-someform %])

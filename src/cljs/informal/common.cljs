@@ -49,3 +49,17 @@
 
 (defn realize-seqs [seqs]
   (reduce realize-seq [] seqs))
+
+(defn- branch? [node]
+  (or (map? node) (sequential? node)))
+
+(defn- children [node]
+  (cond
+    (map? node) (vals node)
+    (sequential? node) node))
+
+(defn some-not-nil [coll]
+  (->> coll
+    (tree-seq branch? children)
+    (filter (complement branch?))
+    (some identity)))
