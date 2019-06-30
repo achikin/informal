@@ -21,6 +21,9 @@ Design-agnostic Reagent forms framework focused on DRY and maximum reusability
 (ns my-ns
     (:require [informal.form :as form]))
 
+;; First we define the reusable components, 
+;; which we'll be using later to build our forms
+
 (defn save-button [{:keys [label on-click disabled]}]
   [:button {:on-click on-click
             :disabled disabled}
@@ -28,15 +31,6 @@ Design-agnostic Reagent forms framework focused on DRY and maximum reusability
 
 (defn cancel-button [{:keys [label on-click]}]
   [:button {:on-click on-click} label])
-
-(defn form-layout [form-params fields save-button cancel-button]
-  [:div {:id (-> form-params :params :id)}
-   [:h2  (-> form-params :params :title)]
-   fields
-   [:div
-    (seq (-> form-params :params :custom-buttons))
-    [cancel-button form-params]
-    [save-button form-params]]])
 
 (defn text [{:keys [field value label error params on-change]}]
   [:form {:key field}
@@ -49,6 +43,31 @@ Design-agnostic Reagent forms framework focused on DRY and maximum reusability
                           :on-change #(on-change (common/event->value %)})]
    @error)
 
+;; now we define the common layout of our form: 
+;; where title, save/cancel buttons and other common components should reside
+(defn form-layout [form-params fields save-button cancel-button]
+  [:div {:id (-> form-params :params :id)}
+   [:h2  (-> form-params :params :title)]
+   fields
+   [:div
+    (seq (-> form-params :params :custom-buttons))
+    [cancel-button form-params]
+    [save-button form-params]]])
+
+;; now define some components like text/number fields, select fields and etc
+(defn text [{:keys [field value label error params on-change]}]
+  [:form {:key field}
+   [:label {:for field
+            :style {} } label]
+   [:br]
+   [:input (merge params {:value @value
+                          :id field
+                          :type "text"
+                          :on-change #(on-change (common/event->value %)})]
+   @error)
+
+;; gather our form components into a reusable "implementation"
+;; which could be changed at any moment
 (def impl {:form-layout {:render #'form-layout}
            :save-button {:render #'save-button}
            :cancel-button {:render #'cancel-button}
@@ -56,6 +75,8 @@ Design-agnostic Reagent forms framework focused on DRY and maximum reusability
            :form/text* {:render #'text
                         :validator (fn [val] (when (empty? val) "Should not be empty"))})
 
+;; now we can create as much compact forms as we want 
+;; using our implementation
 (defn myform []
   (let [state {:name "John"
                :last_name "Doe"
