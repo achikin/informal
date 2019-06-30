@@ -65,11 +65,18 @@
   (for [c (common/realize-seqs components)]
     (let [tag (first c)]
       (cond
+        ;;user-defined field from :impl
         (contains? (:impl form-params) tag)
         (resolve-field form-params c)
+
+        ;; any arbitrary tag like :div :span or else
         (keyword? tag)
         (resolve-tag form-params c)
+
+        ;; if we see function component - pass state to it as a last parameter
+        ;; maybe change to IFn so that multimethods could be also used
         (fn? tag) (resolve-fn form-params c)
+
         :else (.error js/console "Form: can't resolve tag -> " tag)))))
 
 
