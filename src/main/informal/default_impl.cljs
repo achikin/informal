@@ -89,17 +89,18 @@
 (defn required-validator [value]
   (when (empty? value) "Should not be empty"))
 
-(def *default-impl* {:form/text {:render #'text}
-                     :form/text* {:render #'text
-                                  :validator #'required-validator}
-                     :form/select {:render #'select}
-                     :form/number {:render #'number}
-                     :form/checkbox {:render #'checkbox}
-                     :buttons-layout {:render #'buttons-layout}
-                     :form-layout {:render #'form-layout}
-                     :dialog-layout {:render (fn [id {:keys [save-button cancel-button custom-buttons] :as buttons} & fields]
-                                               [:div fields])}
-                     :form-title {:render (fn [title] [:h2 title])}
-                     :save-button {:render #'save-button}
-                     :cancel-button {:render #'cancel-button}})
-(def *impl* {})
+(def default-impl {:form/text {:render #'text}
+                   :form/text* {:render #'text
+                                :validator #'required-validator}
+                   :form/select {:render #'select}
+                   :form/number {:render #'number}
+                   :form/checkbox {:render #'checkbox}
+                   :buttons-layout {:render #'buttons-layout}
+                   :form-layout {:render #'form-layout}
+                   :dialog-layout {:render (fn [id {:keys [save-button cancel-button custom-buttons] :as buttons} & fields]
+                                             [:div fields])}
+                   :form-title {:render (fn [title] [:h2 title])}
+                   :save-button {:render #'save-button}
+                   :cancel-button {:render #'cancel-button}})
+
+(def ^:dynamic *impl* {})

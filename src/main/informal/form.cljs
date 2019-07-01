@@ -1,6 +1,6 @@
 (ns informal.form
   (:require [reagent.core :as r]
-            [informal.default-impl :as form-impl]
+            [informal.default-impl :as default-impl]
             [informal.common :as common]))
 
 
@@ -140,7 +140,7 @@
 
        :reagent-render (fn [params & fields]
                          (let [_ (when (:debug params) (debug-state state (:debug params)))
-                               impl (or (:impl params) form-impl/*impl*)
+                               impl (or (:impl params) default-impl/*impl*)
                                form-params {:state state
                                             :params (dissoc params :state :debug :impl)
                                             :errors errors
@@ -159,6 +159,6 @@
 
 
 (defn set-default-impl! [impl]
-  (set! form-impl/*impl* impl))
+  (set! default-impl/*impl* impl))
 
-(set-default-impl! form-impl/*default-impl*)
+(set-default-impl! default-impl/default-impl)

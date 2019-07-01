@@ -2,7 +2,7 @@
   (:require [re-frame.core :as rf]
             [example.subs :as subs]
             [informal.form :as form]
-            [informal.default-impl :as impl]
+            [informal.default-impl :as default-impl]
             [reagent.core :as r]))
 
 (defonce state (r/atom {}))
@@ -15,7 +15,7 @@
     [form/form {:state state
                 :title "My shiny form"
                 :on-save #(.log js/console %)
-                :impl impl/*default-impl*}
+                :impl default-impl/default-impl}
      [:form/text :name]
      [:form/text* :last_name]
      [:form/number :age]]))
@@ -34,7 +34,7 @@
      [form/form {:state @(rf/subscribe [:example.subs/someform])
                  :title "Someform"
                  :on-save #(rf/dispatch [:example.events/set-someform %])
-                 :impl impl/*default-impl*}
+                 :impl default-impl/default-impl}
       [:form/number :a]
       [:form/text* :name]
       [:form/text :b]]]))

@@ -14,4 +14,6 @@ pom.xml.asc
 .nrepl-port
 .cpcache/
 .repl/
-/resources/public/js/compiled/
+.shadow-cljs
+node_modules
+cljs-runtime
