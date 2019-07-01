@@ -18,4 +18,4 @@
         :modules {:main {:entries [example.core]}}
         :devtools {:http-root "resources/public"
                    :http-port 8080
-                   :after-load informal.core/mount-root}}}}
+                   :after-load example.core/mount-root}}}}
