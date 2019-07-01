@@ -17,3 +17,5 @@ pom.xml.asc
 .shadow-cljs
 node_modules
 cljs-runtime
+manifest.edn
+example/resources/public/js/main.js
